@@ -9,7 +9,7 @@ import Foundation
 
 protocol StatisticService {
     
-    var totalAccurancy: Double { get }
+    var totalAccuracy: Double { get }
     var gamesCount: Int { get }
     var bestGame: GameRecord { get }
     
@@ -27,7 +27,7 @@ final class StatisticServiceImplementation: StatisticService {
         case gamesCount
     }
     
-    var totalAccurancy: Double {
+    var totalAccuracy: Double {
         return Double(correct)/Double(total) * 100
     }
     

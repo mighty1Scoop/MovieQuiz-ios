@@ -1,6 +1,6 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController {
+final class MovieQuizViewController: UIViewController, MovieQuizViewControllerProtocol {
     
     //MARK: - Private properties
     @IBOutlet private var imageView: UIImageView!
@@ -11,24 +11,18 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     
     private var alertPresenter: AlertPresenterProtocol?
-    var statisticService: StatisticService?
     private var presenter: MovieQuizPresenter?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        imageView.layer.cornerRadius = 20
+       
         presenter = MovieQuizPresenter(viewController: self)
-        
-        statisticService = StatisticServiceImplementation()
         alertPresenter = AlertPresenter(delegate: self)
-        showLoadingIndicator()
+
+        imageView.layer.cornerRadius = 20
     }
     
-    
-
-    
-    // MARK: - Private funcs
     func showLoadingIndicator() {
         activityIndicator.isHidden = false
         activityIndicator.startAnimating()
@@ -46,26 +40,18 @@ final class MovieQuizViewController: UIViewController {
             message: message,
             buttonText: "Попробовать ещё раз") { [weak self] in
                 guard let self = self else { return }
-                
                 presenter?.restartGame()
             }
         alertPresenter?.showAlert(alert)
     }
     
-    func showAnswerResult(isCorrect: Bool) {
-        presenter?.didAnswer(isCorrectAnswer: isCorrect)
-        
+    func highlightImageBorder(isCorrect: Bool) {
         imageView.layer.masksToBounds = true // 1
         imageView.layer.borderWidth = 8 // 2
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor // 3
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self else { return }
-            self.presenter?.showNextQuestionOrResults()
-            
-            self.imageView.layer.borderColor = UIColor.clear.cgColor
-            enableButtons()
-        }
+    }
+    func clearImageBorder() {
+        self.imageView.layer.borderColor = UIColor.clear.cgColor
         
     }
     
@@ -76,7 +62,7 @@ final class MovieQuizViewController: UIViewController {
         counterLabel.text = step.questionNumber
     }
     
-    // приватный метод для показа результатов раунда квиза
+    // метод для показа результатов раунда квиза
     // принимает вью модель QuizResultsViewModel и ничего не возвращает
     func show(quiz result: QuizResultsViewModel) {
         let alertModel = AlertModel(
@@ -91,19 +77,19 @@ final class MovieQuizViewController: UIViewController {
         alertPresenter?.showAlert(alertModel)
     }
     
-    private func disableButtons() {
+    func disableButtons() {
         noButton.isEnabled = false
         yesButton.isEnabled = false
     }
     
-    private func enableButtons() {
+    func enableButtons() {
         yesButton.isEnabled = true
         noButton.isEnabled = true
     }
     
     
     // MARK: - IBActions
-
+    
     @IBAction private func yesButtonClicked(_ sender: Any) {
         presenter?.yesButtonClicked()
         disableButtons()
