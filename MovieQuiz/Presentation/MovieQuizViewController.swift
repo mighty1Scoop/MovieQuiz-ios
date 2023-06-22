@@ -10,15 +10,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
     @IBOutlet private var noButton: UIButton!
     @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     
-    private var currentQuestionIndex = 0
     private var correctAnswers = 0
     
-    private let questionsAmount: Int = 10
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
     private var alertPresenter: AlertPresenterProtocol?
     private var statisticService: StatisticService?
-    
+    private let presenter = MovieQuizPresenter()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -28,7 +26,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
         statisticService = StatisticServiceImplementation()
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         alertPresenter = AlertPresenter(delegate: self)
-        
+        presenter.viewController = self
         showLoadingIndicator()
         questionFactory?.loadData()
     }
@@ -38,7 +36,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
         guard let question else { return }
         
         currentQuestion = question
-        let viewModel = convert(model: question)
+        let viewModel = presenter.convert(model: question)
         
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
@@ -73,7 +71,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
             buttonText: "Попробовать ещё раз") { [weak self] in
                 guard let self = self else { return }
                 
-                self.currentQuestionIndex = 0
+                presenter.resetQuestionIndex()
                 self.correctAnswers = 0
                 
                 self.questionFactory?.loadData()
@@ -81,7 +79,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
         alertPresenter?.showAlert(alert)
     }
     
-    private func showAnswerResult(isCorrect: Bool) {
+    func showAnswerResult(isCorrect: Bool) {
         if isCorrect {
             correctAnswers += 1
         }
@@ -101,11 +99,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
     }
     
     private func showNextQuestionOrResults() {
-        if currentQuestionIndex == questionsAmount - 1 {
-            statisticService?.store(correct: correctAnswers, total: questionsAmount)
+        if presenter.isLastQuestion() {
+            statisticService?.store(correct: correctAnswers, total: presenter.amountQuestions())
             let text =
             """
-            Ваш результат: \(correctAnswers)/\(questionsAmount)
+            Ваш результат: \(correctAnswers)/\(presenter.amountQuestions())
             Количество сыграных квизов: \(statisticService?.gamesCount ?? 1)
             Рекорд: \(statisticService?.bestGame.correct ?? 0)/\(statisticService?.bestGame.total ?? 10) \(statisticService?.bestGame.date.dateTimeString ?? Date().dateTimeString)
             Cредняя точность: \(statisticService?.totalAccurancy ?? 0)%
@@ -116,18 +114,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
                 buttonText: "Сыграть ещё раз")
             show(quiz: viewModel)
         } else {
-            currentQuestionIndex += 1
+            presenter.switchToNextQuestion()
             questionFactory?.requestNextQuestion()
         }
-    }
-    
-    // метод конвертации, который принимает моковый вопрос и возвращает вью модель для экрана вопроса
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        let image = UIImage(data: model.image) ?? UIImage()
-        let questionText = model.text
-        let number = "\(currentQuestionIndex+1)/\(questionsAmount)"
-        
-        return QuizStepViewModel(image: image, question: questionText, questionNumber: number)
     }
     
     // приватный метод вывода на экран вопроса, который принимает на вход вью модель вопроса и ничего не возвращает
@@ -145,7 +134,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
             message: result.text,
             buttonText: result.buttonText) { [weak self] in
                 guard let self = self else { return }
-                self.currentQuestionIndex = 0
+                presenter.resetQuestionIndex()
                 self.correctAnswers = 0
                 self.questionFactory?.requestNextQuestion()
             }
@@ -153,21 +142,23 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate  
         alertPresenter?.showAlert(alertModel)
     }
     
-    
-    // MARK: - IBActions
-    @IBAction private func yesButtonClicked(_ sender: Any) {
-        guard let currentQuestion else { return }
-        let givenAnswer = true
-        
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+    private func disableButtons() {
+        noButton.isEnabled = false
         yesButton.isEnabled = false
     }
     
+    
+    // MARK: - IBActions
+
+    @IBAction private func yesButtonClicked(_ sender: Any) {
+        presenter.currentQuestion = currentQuestion
+        presenter.yesButtonClicked()
+        disableButtons()
+    }
+    
     @IBAction private func noButtonClicked(_ sender: Any) {
-        guard let currentQuestion else { return }
-        let givenAnswer = false
-        
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
-        noButton.isEnabled = false
+        presenter.currentQuestion = currentQuestion
+        presenter.noButtonClicked()
+        disableButtons()
     }
 }

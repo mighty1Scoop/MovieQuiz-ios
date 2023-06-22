@@ -15,15 +15,19 @@ struct MoviesLoader: MoviesLoading {
     // MARK: - API KEY
     private let apiKey = "k_956619zh"
     
-    // MARK: - NetworkClient
-    private let networkClient = NetworkClient()
-    
     // MARK: - URL
     private var mostPopularMoviesUrl: URL {
         guard let url = URL(string: "https://imdb-api.com/en/API/Top250Movies/\(apiKey)/") else {
             preconditionFailure("Unable to construct mostPopularMoviesUrl")
         }
         return url
+    }
+    
+    // MARK: - NetworkClient
+    private let networkClient: NetworkRouting
+      
+    init(networkClient: NetworkRouting = NetworkClient()) {
+        self.networkClient = networkClient
     }
     
     func loadMovies(handler: @escaping (Result<MostPopularMovies, Error>) -> Void) {

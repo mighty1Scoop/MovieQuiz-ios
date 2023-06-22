@@ -7,15 +7,12 @@
 
 import Foundation
 
-struct ApiErrorMessage: LocalizedError {
-    var errorDescription: String?
-    
-    init(_ errorDescription: String? = nil) {
-        self.errorDescription = errorDescription
-    }
+protocol NetworkRouting {
+    func fetch(url: URL, handler: @escaping (Result<Data, Error>) -> Void)
 }
 
-struct NetworkClient {
+
+struct NetworkClient: NetworkRouting {
     
     private enum NetworkError: Error {
         case codeError
