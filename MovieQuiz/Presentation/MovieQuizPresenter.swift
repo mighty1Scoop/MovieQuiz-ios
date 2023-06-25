@@ -44,10 +44,6 @@ final class MovieQuizPresenter {
         currentQuestionIndex += 1
     }
     
-    func amountQuestions() -> Int {
-        return questionsAmount
-    }
-    
     func convert(model: QuizQuestion) -> QuizStepViewModel {
         let image = UIImage(data: model.image) ?? UIImage()
         let questionText = model.text
@@ -62,16 +58,6 @@ final class MovieQuizPresenter {
     
     func noButtonClicked() {
         didAnswer(isYes: false)
-    }
-    
-    func didRecieveNextQuestion(question: QuizQuestion?) {
-        guard let question else { return }
-        
-        currentQuestion = question
-        let viewModel = convert(model: question)
-        DispatchQueue.main.async { [weak self] in
-            self?.viewController?.show(quiz: viewModel)
-        }
     }
     
     func didAnswer(isCorrectAnswer: Bool) {
@@ -135,6 +121,16 @@ final class MovieQuizPresenter {
 
 // MARK: - QuestionFactoryDelegate
 extension MovieQuizPresenter: QuestionFactoryDelegate {
+    
+    func didRecieveNextQuestion(question: QuizQuestion?) {
+        guard let question else { return }
+        
+        currentQuestion = question
+        let viewModel = convert(model: question)
+        DispatchQueue.main.async { [weak self] in
+            self?.viewController?.show(quiz: viewModel)
+        }
+    }
     
     func didLoadDataFromServer() {
         viewController?.hideLoadingIndicator()

@@ -13,6 +13,11 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     private var alertPresenter: AlertPresenterProtocol?
     private var presenter: MovieQuizPresenter?
     
+    //MARK: - Properties
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,12 +29,11 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     }
     
     func showLoadingIndicator() {
-        activityIndicator.isHidden = false
+        activityIndicator.hidesWhenStopped = true
         activityIndicator.startAnimating()
     }
     
     func hideLoadingIndicator() {
-        activityIndicator.isHidden = true
         activityIndicator.stopAnimating()
     }
     
@@ -83,7 +87,6 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     }
     
     // MARK: - IBActions
-    
     @IBAction private func yesButtonClicked(_ sender: Any) {
         presenter?.yesButtonClicked()
         changeButtonsActivity(enabled: false)
@@ -93,4 +96,6 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         presenter?.noButtonClicked()
         changeButtonsActivity(enabled: false)
     }
+    
+    
 }

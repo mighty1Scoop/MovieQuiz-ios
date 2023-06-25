@@ -7,7 +7,7 @@
 
 import Foundation
 
-class QuestionFactory: QuestionFactoryProtocol {
+final class QuestionFactory: QuestionFactoryProtocol {
     
     private var moviesLoader: MoviesLoading
     private weak var delegate: QuestionFactoryDelegate?
