@@ -30,8 +30,8 @@ final class MovieQuizPresenter {
         viewController.showLoadingIndicator()
     }
     
-    func isLastQuestion() -> Bool {
-        return currentQuestionIndex == questionsAmount - 1
+    var isLastQuestion: Bool {
+        currentQuestionIndex == questionsAmount - 1
     }
     
     func restartGame() {
@@ -75,7 +75,9 @@ final class MovieQuizPresenter {
     }
     
     func didAnswer(isCorrectAnswer: Bool) {
-        correctAnswers += 1
+        if isCorrectAnswer {
+            correctAnswers += 1
+        }
     }
     
     func makeResultsMessage() -> String {
@@ -84,8 +86,8 @@ final class MovieQuizPresenter {
         let bestGame = statisticService.bestGame
         
         let totalPlaysCountLine = "Количество сыгранных квизов: \(statisticService.gamesCount)"
-        let currentGameResultLine = "Ваш результат: \(correctAnswers)\\\(questionsAmount)"
-        let bestGameInfoLine = "Рекорд: \(bestGame.correct)\\\(bestGame.total)"
+        let currentGameResultLine = "Ваш результат: \(correctAnswers)/\(questionsAmount)"
+        let bestGameInfoLine = "Рекорд: \(bestGame.correct)/\(bestGame.total)"
         + " (\(bestGame.date.dateTimeString))"
         let averageAccuracyLine = "Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%"
         
@@ -112,12 +114,12 @@ final class MovieQuizPresenter {
             guard let self else { return }
             proceedToNextQuestionOrResults()
             viewController?.clearImageBorder()
-            viewController?.enableButtons()
+            viewController?.changeButtonsActivity(enabled: true)
         }
     }
     
     private func proceedToNextQuestionOrResults() {
-        if self.isLastQuestion() {
+        if self.isLastQuestion {
             let text = makeResultsMessage()
             let viewModel = QuizResultsViewModel(
                 title: "Этот раунд окончен!",

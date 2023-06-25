@@ -184,11 +184,11 @@
 		8F4738322848DE2A005DF65E /* Presentation */ = {
 			isa = PBXGroup;
 			children = (
+				24A5DCA12A44B31E00469ADE /* MovieQuizPresenter.swift */,
+				24A5DCA32A44D12800469ADE /* MovieQuizViewControllerProtocol.swift */,
 				AD1ABAB52831907B00B3E448 /* MovieQuizViewController.swift */,
 				24CFE40B2A1A8FE90073245E /* AlertPresenter.swift */,
 				AD1ABAB72831907B00B3E448 /* Main.storyboard */,
-				24A5DCA12A44B31E00469ADE /* MovieQuizPresenter.swift */,
-				24A5DCA32A44D12800469ADE /* MovieQuizViewControllerProtocol.swift */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";

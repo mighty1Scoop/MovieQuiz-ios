@@ -11,14 +11,17 @@ protocol AlertPresenterProtocol: AnyObject {
     func showAlert(_ model: AlertModel)
 }
 
-class AlertPresenter: AlertPresenterProtocol {
+final class AlertPresenter: AlertPresenterProtocol {
     
+    //MARK: - Private properties
     private weak var viewController: UIViewController?
     
+    //MARK: - Initalizer
     init(delegate: UIViewController?) {
         self.viewController = delegate
     }
     
+    //MARK: - Public methods
     func showAlert(_ model: AlertModel) {
         let alert = UIAlertController(
             title: model.title,

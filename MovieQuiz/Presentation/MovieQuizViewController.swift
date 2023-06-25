@@ -77,26 +77,20 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         alertPresenter?.showAlert(alertModel)
     }
     
-    func disableButtons() {
-        noButton.isEnabled = false
-        yesButton.isEnabled = false
+    func changeButtonsActivity(enabled: Bool = true){
+        noButton.isEnabled = enabled
+        yesButton.isEnabled = enabled
     }
-    
-    func enableButtons() {
-        yesButton.isEnabled = true
-        noButton.isEnabled = true
-    }
-    
     
     // MARK: - IBActions
     
     @IBAction private func yesButtonClicked(_ sender: Any) {
         presenter?.yesButtonClicked()
-        disableButtons()
+        changeButtonsActivity(enabled: false)
     }
     
     @IBAction private func noButtonClicked(_ sender: Any) {
         presenter?.noButtonClicked()
-        disableButtons()
+        changeButtonsActivity(enabled: false)
     }
 }

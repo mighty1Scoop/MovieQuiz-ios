@@ -9,6 +9,10 @@ import XCTest
 @testable import MovieQuiz
 
 final class MovieQuizViewControllerMock: MovieQuizViewControllerProtocol {
+    func changeButtonsActivity(enabled: Bool) {
+        
+    }
+    
 
     
     func show(quiz step: QuizStepViewModel) {
@@ -36,10 +40,6 @@ final class MovieQuizViewControllerMock: MovieQuizViewControllerProtocol {
     }
     
     func clearImageBorder() {
-        
-    }
-    
-    func enableButtons() {
         
     }
 }
