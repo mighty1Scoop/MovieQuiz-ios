@@ -21,10 +21,10 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-       
+        
         presenter = MovieQuizPresenter(viewController: self)
         alertPresenter = AlertPresenter(delegate: self)
-
+        
         imageView.layer.cornerRadius = 20
     }
     
@@ -54,9 +54,9 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         imageView.layer.borderWidth = 8 // 2
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor // 3
     }
+    
     func clearImageBorder() {
         self.imageView.layer.borderColor = UIColor.clear.cgColor
-        
     }
     
     // метод вывода на экран вопроса, который принимает на вход вью модель вопроса и ничего не возвращает
@@ -81,7 +81,7 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         alertPresenter?.showAlert(alertModel)
     }
     
-    func changeButtonsActivity(enabled: Bool = true){
+    func changeButtonsActivity(enabled: Bool = true) {
         noButton.isEnabled = enabled
         yesButton.isEnabled = enabled
     }
